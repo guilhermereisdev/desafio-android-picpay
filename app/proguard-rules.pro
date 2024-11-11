@@ -20,115 +20,91 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 
-#######################
-# MOSHI
-#######################
+# ---- Configurações Básicas ----
+-keepattributes *Annotation*
 
-# JSR 305 annotations are for embedding nullability information.
--dontwarn javax.annotation.**
+# Otimização desativada para evitar problemas (opcional em desenvolvimento)
+-dontoptimize
 
--keepclasseswithmembers class * {
-    @com.squareup.moshi.* <methods>;
+# Preserva classes necessárias para anotações do Android
+-keepclassmembers class * {
+    @androidx.annotation.Keep *;
 }
 
--keep @com.squareup.moshi.JsonQualifier interface *
+-keep class androidx.** { *; }
+-dontwarn androidx.**
 
-# Enum field names are used by the integrated EnumJsonAdapter.
-# Annotate enums with @JsonClass(generateAdapter = false) to use them with Moshi.
--keepclassmembers @com.squareup.moshi.JsonClass class * extends java.lang.Enum {
-    <fields>;
-}
-
-# The name of @JsonClass types is used to look up the generated adapter.
--keepnames @com.squareup.moshi.JsonClass class *
-
-# Retain generated JsonAdapters if annotated type is retained.
--if @com.squareup.moshi.JsonClass class *
--keep class <1>JsonAdapter {
-    <init>(...);
-    <fields>;
-}
--if @com.squareup.moshi.JsonClass class **$*
--keep class <1>_<2>JsonAdapter {
-    <init>(...);
-    <fields>;
-}
--if @com.squareup.moshi.JsonClass class **$*$*
--keep class <1>_<2>_<3>JsonAdapter {
-    <init>(...);
-    <fields>;
-}
--if @com.squareup.moshi.JsonClass class **$*$*$*
--keep class <1>_<2>_<3>_<4>JsonAdapter {
-    <init>(...);
-    <fields>;
-}
--if @com.squareup.moshi.JsonClass class **$*$*$*$*
--keep class <1>_<2>_<3>_<4>_<5>JsonAdapter {
-    <init>(...);
-    <fields>;
-}
--if @com.squareup.moshi.JsonClass class **$*$*$*$*$*
--keep class <1>_<2>_<3>_<4>_<5>_<6>JsonAdapter {
-    <init>(...);
-    <fields>;
-}
-
-#######################
-# MOSHI KOTLIN
-#######################
-
--keep class kotlin.reflect.jvm.internal.impl.builtins.BuiltInsLoaderImpl
-
--keepclassmembers class kotlin.Metadata {
-    public <methods>;
-}
+# ---- Regras específicas para bibliotecas ----
 
 #######################
 # OKHTTP
 #######################
 
-# JSR 305 annotations are for embedding nullability information.
 -dontwarn javax.annotation.**
 
-# A resource is loaded with a relative path so the package of this class must be preserved.
 -keepnames class okhttp3.internal.publicsuffix.PublicSuffixDatabase
-
-# Animal Sniffer compileOnly dependency to ensure APIs are compatible with older versions of Java.
 -dontwarn org.codehaus.mojo.animal_sniffer.*
-
-# OkHttp platform used only on JVM and when Conscrypt dependency is available.
--dontwarn okhttp3.internal.platform.ConscryptPlatform
 
 #######################
 # RETROFIT
 #######################
 
-# Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
-# EnclosingMethod is required to use InnerClasses.
 -keepattributes Signature, InnerClasses, EnclosingMethod
-
-# Retrofit does reflection on method and parameter annotations.
 -keepattributes RuntimeVisibleAnnotations, RuntimeVisibleParameterAnnotations
 
-# Retain service method parameters when optimizing.
 -keepclassmembers,allowshrinking,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
 
-# Ignore annotation used for build tooling.
 -dontwarn org.codehaus.mojo.animal_sniffer.IgnoreJRERequirement
-
-# Ignore JSR 305 annotations for embedding nullability information.
 -dontwarn javax.annotation.**
-
-# Guarded by a NoClassDefFoundError try/catch and only used when on the classpath.
 -dontwarn kotlin.Unit
-
-# Top-level functions that can only be used by Kotlin.
 -dontwarn retrofit2.KotlinExtensions
 
-# With R8 full mode, it sees no subtypes of Retrofit interfaces since they are created with a Proxy
-# and replaces all potential values with null. Explicitly keeping the interfaces prevents this.
 -if interface * { @retrofit2.http.* <methods>; }
 -keep,allowobfuscation interface <1>
+
+#######################
+# KOIN
+#######################
+
+# Protege APIs experimentais
+-keep @org.koin.core.annotation.KoinExperimentalAPI class * { *; }
+
+# Protege APIs internas, se necessário
+-keep @org.koin.core.annotation.KoinInternalApi class * { *; }
+
+# Mantém as classes do Koin
+-keep class org.koin.** { *; }
+-dontwarn org.koin.**
+
+#######################
+# COIL (Carregamento de Imagens)
+#######################
+
+-keep class coil.** { *; }
+-dontwarn coil.**
+
+#######################
+# ROOM (Banco de Dados)
+#######################
+
+-keep class androidx.room.Entity { *; }
+-keep class androidx.room.Dao { *; }
+-keep interface androidx.room.* { *; }
+-dontwarn androidx.room.**
+
+# ---- Outras Configurações Gerais ----
+
+# Remove logs do APK final
+-assumenosideeffects class android.util.Log {
+    public static *** d(...);
+    public static *** w(...);
+    public static *** e(...);
+    public static *** i(...);
+    public static *** v(...);
+}
+
+# Evita remoção de classes do projeto principal
+-keep class com.picpay.desafio.android.** { *; }
+-dontwarn com.picpay.desafio.android.**
