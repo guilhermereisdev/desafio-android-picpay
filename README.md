@@ -1,6 +1,6 @@
 # PicPay - Desafio Android
 
-<img src="https://github.com/mobilepicpay/desafio-android/blob/master/desafio-picpay.gif" width="300"/>
+<img src="desafio-picpay.gif" width="30%" alt="Gif com o comportamento do app">
 
 Um dos desafios de qualquer time de desenvolvimento é lidar com código legado e no PicPay isso não é diferente. Um dos objetivos de trazer os melhores desenvolvedores do Brasil é atacar o problema. Para isso, essa etapa do processo consiste numa proposta de solução para o desafio abaixo e você pode escolher a melhor forma de resolvê-lo, de acordo com sua comodidade e disponibilidade de tempo:
 - Resolver o desafio previamente, e explicar sua abordagem no momento da entrevista.
